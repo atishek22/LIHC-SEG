@@ -7,7 +7,7 @@ import functools
 
 # ******* GENERATORS *********
 
-class ResNet(nn.Module):
+class ResNetGenerator(nn.Module):
     """
     ResNet generator: Consist of Residual Blocks sandwitched between
     downsampling and upsampling blocks.
@@ -40,7 +40,7 @@ class ResNet(nn.Module):
         """
         assert(num_blocks >= 0)
 
-        super(ResNet, self).__init__()
+        super(ResNetGenerator, self).__init__()
 
         # use bias only in the case of instance normalisation
         if type(normalisation) == functools.partial:
@@ -103,7 +103,7 @@ class ResNet(nn.Module):
         return self.model(input)
 
 
-class UNet(nn.Module):
+class UNetGenerator(nn.Module):
     """
     UNet generator with skip connections
 
@@ -127,7 +127,7 @@ class UNet(nn.Module):
             normalisation           --- Type of normalisation
             dropout: bool           --- dropout in residual blocks
         """
-        super(UNet, self).__init__()
+        super(UNetGenerator, self).__init__()
 
         unet_block = UNetResBlock(ngf * 8, ngf * 8, input_channels=None,
                                   submodule=None, normalisation=normalisation,
@@ -203,7 +203,7 @@ class ResidualBlock(nn.Module):
 
         self.conv_block = nn.Sequential(*conv_block)
 
-    def get_padding(padding_type):
+    def get_padding(self, padding_type):
         if padding_type == 'reflect':
             return [nn.ReflectionPad2d(1)], 0
         elif padding_type == 'zero':
