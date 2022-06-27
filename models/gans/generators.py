@@ -2,7 +2,6 @@
 
 import torch
 import torch.nn as nn
-import functools
 
 
 # ******* GENERATORS *********
@@ -43,10 +42,7 @@ class ResNetGenerator(nn.Module):
         super(ResNetGenerator, self).__init__()
 
         # use bias only in the case of instance normalisation
-        if type(normalisation) == functools.partial:
-            use_bias = normalisation.func == nn.InstanceNorm2d
-        else:
-            use_bias = normalisation == nn.InstanceNorm2d
+        use_bias = normalisation == nn.InstanceNorm2d
 
         # build the model
 
@@ -247,10 +243,7 @@ class UNetResBlock(nn.Module):
         """
         super(UNetResBlock, self).__init__()
         self.outermost = outermost
-        if type(normalisation) == functools.partial:
-            use_bias = normalisation.func == nn.InstanceNorm2d
-        else:
-            use_bias = normalisation == nn.InstanceNorm2d
+        use_bias = normalisation == nn.InstanceNorm2d
 
         if input_channels is None:
             input_channels = outer_channels

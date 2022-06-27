@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import torch.nn as nn
-import functools
 
 
 class PatchDiscriminator(nn.Module):
@@ -24,10 +23,7 @@ class PatchDiscriminator(nn.Module):
             normalisation
         """
         super(PatchDiscriminator, self).__init__()
-        if type(normalisation) == functools.partial:
-            use_bias = normalisation.func == nn.InstanceNorm2d
-        else:
-            use_bias = normalisation == nn.InstanceNorm2d
+        use_bias = normalisation == nn.InstanceNorm2d
 
         model = [
             nn.Conv2d(input_channels, ndf, kernel_size=4, stride=2, padding=1),
