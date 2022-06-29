@@ -26,5 +26,8 @@ class WeightInitType(Enum):
     Orthogonal = 4
 
 
-class LRPolicy(Enum):
+class LRSchedulerType(Enum):
     Linear = 1
+    Step = 2
+    Plateau = 3
+    Cosine = 4
