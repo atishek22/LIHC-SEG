@@ -2,6 +2,9 @@
 
 import torch.nn as nn
 
+from ..config import WeightInitType
+from ..utils import model_init
+
 
 class PatchDiscriminator(nn.Module):
     """
@@ -12,7 +15,10 @@ class PatchDiscriminator(nn.Module):
                  input_channels: int,
                  ndf: int = 64,
                  num_layers: int = 3,
-                 normalisation=nn.BatchNorm2d
+                 normalisation=nn.BatchNorm2d,
+
+                 weight_init_type: WeightInitType = WeightInitType.Normal,
+                 **kwargs,
                  ):
         """
         parameters:
@@ -57,6 +63,8 @@ class PatchDiscriminator(nn.Module):
         ]
 
         self.model = nn.Sequential(*model)
+        gpus = kwargs['gpu'] if kwargs.get('gpu') is not None else []
+        model_init(self.model, weight_init_type, gpus, **kwargs)
 
     def forward(self, input):
         return self.model(input)

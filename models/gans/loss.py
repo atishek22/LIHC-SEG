@@ -2,7 +2,7 @@
 
 import torch
 import torch.nn as nn
-from .config import LossType, GradientPenaltyType
+from ..config import LossType, GradientPenaltyType
 
 
 def gradient_penalty(discriminator,

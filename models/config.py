@@ -19,5 +19,12 @@ class GradientPenaltyType(Enum):
     Mixed = 3
 
 
+class WeightInitType(Enum):
+    Normal = 1
+    Xavier = 2
+    Kaiming = 3
+    Orthogonal = 4
+
+
 class LRPolicy(Enum):
     Linear = 1

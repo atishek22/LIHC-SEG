@@ -3,6 +3,9 @@
 import torch
 import torch.nn as nn
 
+from ..utils import model_init
+from ..config import WeightInitType
+
 
 # ******* GENERATORS *********
 
@@ -22,7 +25,9 @@ class ResNetGenerator(nn.Module):
                  dropout: bool = False,
                  num_blocks: int = 6,
                  padding_type: str = "reflect",
-                 num_sampling_blocks: int = 2
+                 num_sampling_blocks: int = 2,
+                 weight_init_type: WeightInitType = WeightInitType.Normal,
+                 **kwargs,
                  ):
         """
         parameters:
@@ -94,6 +99,8 @@ class ResNetGenerator(nn.Module):
         ]
 
         self.model = nn.Sequential(*model)
+        gpus = kwargs['gpu'] if kwargs.get('gpu') is not None else []
+        model_init(self.model, weight_init_type, gpus, **kwargs)
 
     def forward(self, input):
         return self.model(input)
@@ -112,7 +119,10 @@ class UNetGenerator(nn.Module):
                  sampling_block: int,
                  ngf: int = 64,
                  normalisation=nn.BatchNorm2d,
-                 dropout: bool = False):
+                 dropout: bool = False,
+                 weight_init_type: WeightInitType = WeightInitType.Normal,
+                 **kwargs,
+                 ):
         """
         parameters:
             input_channels: int     --- number of channels in input image
@@ -150,6 +160,9 @@ class UNetGenerator(nn.Module):
                                   input_channels=input_channels,
                                   submodule=unet_block, outermost=True,
                                   normalisation=normalisation)
+
+        gpus = kwargs['gpu'] if kwargs.get('gpu') is not None else []
+        model_init(self.model, weight_init_type, gpus, **kwargs)
 
     def forward(self, input):
         return self.model(input)
