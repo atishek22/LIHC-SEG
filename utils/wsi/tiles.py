@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
 import pyvips
+from pathlib import Path
 
 
 def generate_tiles(source_file: Path,
@@ -13,6 +13,5 @@ def generate_tiles(source_file: Path,
     Generates DeepZoom file from the whole slide image
     """
     image = pyvips.Image.new_from_file(str(source_file))
-    dest = Path(dest_folder, source_file.stem)
-    image.dzsave(str(dest),
+    image.dzsave(str(dest_folder),
                  overlap=overlap, tile_size=tile_size, depth=depth)

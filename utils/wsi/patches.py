@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+
+import pyvips
 from pathlib import Path
 from typing import Tuple
 import fast
 import cv2 as cv
 import openslide
 import numpy as np
+
+from .tiles import generate_tiles
 
 
 def generate_patch_fast(source_file: Path, size: Tuple[int, int], level: int):
@@ -29,17 +33,16 @@ def generate_patch_fast(source_file: Path, size: Tuple[int, int], level: int):
 
 def generate_patch_tiles(source_dir: Path,
                          dest_dir: Path,
-                         pyramid: int = 0,
                          size: Tuple[int, int] = (512, 512),
-                         threshold: float = 50.0):
+                         threshold: float = 50.0
+                         ):
     """
     Generate traning patches from DeepZoom files using greylevel
     binary thresholding
     """
-    source = Path(source_dir, str(pyramid))
     dest_dir.mkdir(exist_ok=True)
     s = np.zeros((size[0], size[1], 3), dtype=np.uint8)
-    for f in source.glob("*.jpeg"):
+    for f in source_dir.glob("*.jpeg"):
         try:
             s[:, :, :] = np.array(cv.imread(str(f)))[:, :, :3]
         except ValueError:
@@ -86,3 +89,33 @@ def generate_patch_svs_thresholding(source_file: Path,
             perc = 100 - ((cells / total) * 100)
             if perc > threshold:
                 yield s
+
+
+def generate_patches(source_file: Path,
+                     dest_dir: Path,
+                     pyramid: int = 0,
+                     size: Tuple[int, int] = (512, 512),
+                     threshold: float = 50.0,
+                     tile_size: int = 512,
+                     overlap: int = 0,
+                     depth: int = 2) -> Path:
+    """
+        Generate Training patches from svs files
+    """
+    dest_base = Path(dest_dir, source_file.stem)
+    dest_tiles = Path(dest_base, "tiles")
+    dest_tiles.mkdir(parents=True, exist_ok=True)
+
+    print("Generating tiles...")
+    generate_tiles(source_file, dest_tiles, tile_size, overlap, depth)
+    tiles_dir = Path(dest_base, "tiles_files", str(pyramid))
+    dest_files = Path(dest_base, "patches")
+
+    print("Generating training patches...")
+    generate_patch_tiles(
+        tiles_dir,
+        dest_files,
+        size,
+        threshold
+    )
+    return dest_files
