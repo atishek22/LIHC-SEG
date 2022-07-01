@@ -3,32 +3,11 @@
 import pyvips
 from pathlib import Path
 from typing import Tuple
-import fast
 import cv2 as cv
 import openslide
 import numpy as np
 
 from .tiles import generate_tiles
-
-
-def generate_patch_fast(source_file: Path, size: Tuple[int, int], level: int):
-    """
-    pyFAST:
-    Generate patches for a whole slide image
-    """
-    # Read in the
-    importer = fast.WholeSlideImageImporter.create(str(source_file))
-
-    tissue_segmentation = fast.TissueSegmentation.create().connect(importer)
-
-    patch_generator = fast.PatchGenerator.create(
-        *size, level=level
-    ).connect(0, importer).connect(1, tissue_segmentation)
-
-    patches = []
-    for patch in fast.DataStream(patch_generator):
-        patches.append(patch)
-    return patches
 
 
 def generate_patch_tiles(source_dir: Path,
