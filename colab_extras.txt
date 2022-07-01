@@ -1,0 +1,4 @@
+openslide-python==1.2.0
+pyFAST==4.4.0
+pyvips==2.2.1
+segmentation-models-pytorch==0.2.1
