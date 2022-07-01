@@ -96,18 +96,18 @@ def generate_patches(source_file: Path,
                      pyramid: int = 0,
                      size: Tuple[int, int] = (512, 512),
                      threshold: float = 50.0,
-                     tile_size: int = 512,
                      overlap: int = 0,
-                     depth: int = 2) -> Path:
+                     depth: int = 2,
+                     seg_patches: bool = True) -> Path:
     """
         Generate Training patches from svs files
     """
     dest_base = Path(dest_dir, source_file.stem)
+    dest_base.mkdir(parents=True, exist_ok=True)
     dest_tiles = Path(dest_base, "tiles")
-    dest_tiles.mkdir(parents=True, exist_ok=True)
 
     print("Generating tiles...")
-    generate_tiles(source_file, dest_tiles, tile_size, overlap, depth)
+    generate_tiles(source_file, dest_tiles, size[0], overlap, depth)
     tiles_dir = Path(dest_base, "tiles_files", str(pyramid))
     dest_files = Path(dest_base, "patches")
 
@@ -118,4 +118,20 @@ def generate_patches(source_file: Path,
         size,
         threshold
     )
-    return dest_files
+
+    seg_files = None
+
+    if seg_patches:
+        print("Generating segmentation patches")
+        source = Path(source_file.parent, source_file.stem + "_whole.tif")
+        dest = Path(dest_base, "seg")
+        generate_tiles(
+            source,
+            dest,
+            size[0],
+            overlap,
+            depth
+        )
+        seg_files = Path(dest_base, "seg_files", str(pyramid))
+
+    return dest_files, seg_files
